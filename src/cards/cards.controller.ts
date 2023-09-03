@@ -19,8 +19,8 @@ export class CardsController {
 
   @Post()
   create(@Body() card: CardDTO) {
-    if (!card.nickname) {
-      throw new BadRequestException('A user must have nickname');
+    if (!card.nickname && !card.user.id) {
+      throw new BadRequestException('A card must have nickname and a user');
     }
     return this.cardsService.create(card);
   }
@@ -32,10 +32,9 @@ export class CardsController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<CardDTO> {
-    const card =
-      typeof id === 'number' && (await this.cardsService.findOne(id));
+    const card = await this.cardsService.findOne(id);
     if (!card) {
-      throw new NotFoundException('Card not found!');
+      throw new NotFoundException('Card not founded!');
     }
     return card;
   }
@@ -45,10 +44,9 @@ export class CardsController {
     @Param('id') id: number,
     @Body() card: Partial<CardDTO>,
   ): Promise<void> {
-    const exists =
-      typeof id === 'number' && (await this.cardsService.findOne(id));
-    if (!exists) {
-      throw new NotFoundException('Card not found!');
+    const cardExists = await this.cardsService.findOne(id);
+    if (!cardExists) {
+      throw new NotFoundException('Card not founded!');
     }
     const formatCardToUpdate = {
       nickname: card.nickname,
@@ -59,11 +57,10 @@ export class CardsController {
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    const card =
-      typeof id === 'number' && (await this.cardsService.findOne(id));
+    const card = await this.cardsService.findOne(id);
 
     if (!card) {
-      throw new NotFoundException();
+      throw new NotFoundException('Card not founded!');
     }
     return this.cardsService.remove(id);
   }

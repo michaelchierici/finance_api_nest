@@ -27,14 +27,15 @@ export class Card extends BaseEntity {
   @Column()
   limit: number;
 
-  @ManyToOne(() => User, (user) => user.card_id, {
+  @ManyToOne(() => User, (user) => user.card, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => Transaction, (transaction) => transaction.card_id, {
+  @OneToMany(() => Transaction, (transaction) => transaction.card, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   transactions: Transaction[];

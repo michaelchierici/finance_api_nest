@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  MinLength,
+  IsEmpty,
+} from 'class-validator';
+import { Card } from 'src/entities';
 
 export class UserDTO {
   @IsString()
@@ -13,4 +20,7 @@ export class UserDTO {
   @IsString()
   @IsNotEmpty()
   job: string;
+
+  @IsEmpty()
+  card: Card[];
 }

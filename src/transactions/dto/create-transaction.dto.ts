@@ -22,5 +22,5 @@ export class TransactionDTO {
 
   @IsNumber()
   @IsNotEmpty()
-  card_id: Card;
+  card: Card;
 }

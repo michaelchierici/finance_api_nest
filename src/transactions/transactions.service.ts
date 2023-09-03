@@ -18,9 +18,9 @@ export class TransactionsServices {
   ) {}
 
   async create(createTransactionDTO: TransactionDTO): Promise<TransactionDTO> {
-    const { card_id, value } = createTransactionDTO;
-    const card = await this.cardsService.findOne(Number(card_id));
-    if (!card) {
+    const { card, value } = createTransactionDTO;
+    const cardToCreate = await this.cardsService.findOne(card.id);
+    if (!cardToCreate) {
       throw new BadRequestException('No card founded');
     }
 
@@ -56,22 +56,26 @@ export class TransactionsServices {
   }
 
   async remove(id: number) {
-    const transaction = await this.findOne(id);
-    const { card_id, value } = transaction;
+    const transaction = await this.transactionsRepository
+      .createQueryBuilder('transaction')
+      .leftJoinAndSelect('transaction.card', 'card')
+      .where('transaction.id = :id', { id })
+      .getOne();
+    const { card, value } = transaction;
 
-    const card = await this.cardsService.findOne(Number(card_id));
+    const cardExists = await this.cardsService.findOne(card.id);
 
-    if (!card) {
+    if (!cardExists) {
       throw new BadRequestException('No card founded');
     }
 
-    const addTransactionInCard = {
+    const removeTransactionsFromCard = {
       ...card,
       limit: card.limit + value,
     };
 
     const transactionToDeleted = this.transactionsRepository.delete(id);
-    await this.cardsRepository.save(addTransactionInCard);
+    await this.cardsRepository.save(removeTransactionsFromCard);
     return transactionToDeleted;
   }
 }

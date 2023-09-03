@@ -26,5 +26,5 @@ export class User extends BaseEntity {
     eager: true,
   })
   @JoinColumn()
-  card_id: Card[];
+  card: Card[];
 }

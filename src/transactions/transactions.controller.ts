@@ -18,10 +18,8 @@ export class TransactionsController {
 
   @Post()
   create(@Body() transaction: TransactionDTO) {
-    if (!transaction.value && !transaction.card_id) {
-      throw new BadRequestException(
-        'Transaction needs a value and a transaction id',
-      );
+    if (!transaction.value && !transaction.card.id) {
+      throw new BadRequestException('Transaction needs a value and a card');
     }
     return this.transactionsServices.create(transaction);
   }
@@ -33,8 +31,7 @@ export class TransactionsController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<TransactionDTO> {
-    const transaction =
-      typeof id === 'number' && (await this.transactionsServices.findOne(id));
+    const transaction = await this.transactionsServices.findOne(id);
     if (!transaction) {
       throw new NotFoundException('transaction not found!');
     }
@@ -46,9 +43,8 @@ export class TransactionsController {
     @Param('id') id: number,
     @Body() transaction: Partial<TransactionDTO>,
   ): Promise<void> {
-    const exists =
-      typeof id === 'number' && (await this.transactionsServices.findOne(id));
-    if (!exists) {
+    const transactionExists = await this.transactionsServices.findOne(id);
+    if (!transactionExists) {
       throw new NotFoundException('transaction not found!');
     }
 
@@ -57,8 +53,8 @@ export class TransactionsController {
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    const transaction = await this.transactionsServices.findOne(id);
-    if (!transaction) {
+    const transactionExists = await this.transactionsServices.findOne(id);
+    if (!transactionExists) {
       throw new NotFoundException('transaction not founded');
     }
     return this.transactionsServices.remove(id);

@@ -28,5 +28,5 @@ export class Transaction extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn()
-  card_id: Card;
+  card: Card;
 }

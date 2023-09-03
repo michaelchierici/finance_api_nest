@@ -32,8 +32,7 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<UserDTO> {
-    const user =
-      typeof id === 'number' && (await this.usersService.findOne(id));
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with ${id} does not exist`);
     }
@@ -45,12 +44,10 @@ export class UsersController {
     @Param('id') id: number,
     @Body() user: Partial<UserDTO>,
   ): Promise<void> {
-    const exists =
-      typeof id === 'number' && (await this.usersService.findOne(id));
+    const exists = await this.usersService.findOne(id);
     if (!exists) {
-      throw new NotFoundException();
+      throw new NotFoundException(`User with ${id} does not exist`);
     }
-
     await this.usersService.update(id, user);
   }
 
